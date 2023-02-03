@@ -17,7 +17,7 @@ A CSV file is being generated in the JCR with the path **/sites/systemsite/files
 
 Name | alias | Mandatory | Value | Description
  --- | --- | :---: | :---: | ---
- -p | --csvRootPath | | / | Root path where to store the CSV files
+ -p | --csvRootPath | | /sites/systemsite/files | Root path where to store the CSV files
 
 
 **Example:**
