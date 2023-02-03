@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+    <bean parent="jobSchedulingBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailBean">
+                <property name="name" value="ReportUsersAndGroupsJob" />
+                <property name="jobClass" value="org.jahia.community.reportusersandgroups.ReportUsersAndGroupsBackgroundJob" />
+                <property name="group" value="Maintenance" />
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="csvRootPath" value="${jahia.reportsusersandgroups.job.csvRootPath:/sites/systemsite/files}"/>
+                        <entry key="userPropertiesToExport" value="${jahia.reportsusersandgroups.job.userPropertiesToExport:j:firstName,j:lastName}"/>
+                    </map>
+                </property>
+                <property name="description" value="Create CSV files with all users and their groups for all websites" />
+            </bean>
+        </property>
+        <property name="trigger">
+            <bean class="org.quartz.CronTrigger">
+                <property name="name" value="VersionsCleanerJobTrigger"/>
+                <property name="cronExpression" value="${jahia.reportsusersandgroups.job.cronExpression:0 30 1 * * ?}"/>
+            </bean>
+        </property>
+    </bean>
+</beans>

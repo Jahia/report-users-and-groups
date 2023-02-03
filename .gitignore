@@ -1,0 +1,15 @@
+/src/main/import/repository.xml.generated
+/target/
+/.classpath
+/.project
+/.settings
+/*.iml
+repository.xml.generated
+.idea
+*.iml
+/src/main/resources/javascript/apps
+/node
+/node_modules
+/yarn-error.log
+/.yalc
+/yarn.lock

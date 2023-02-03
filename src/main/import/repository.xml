@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
+    <modules jcr:primaryType="jnt:modules">
+        <report-users-and-groups j:dependencies="default"
+                           j:installedModules="report-users-and-groups"
+                           j:modulePriority="0"
+                           j:moduleType="module"
+                           j:title="Report users and groups"
+                           jcr:primaryType="jnt:module">
+                
+            <portlets jcr:primaryType="jnt:portletFolder"/>
+            <files jcr:primaryType="jnt:folder"/>
+            <contents jcr:primaryType="jnt:contentFolder"/>
+            <templates j:rootTemplatePath="/" jcr:primaryType="jnt:templatesFolder">
+            
+            </templates>
+                
+        </report-users-and-groups>
+    </modules>
+</content>
