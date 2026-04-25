@@ -104,7 +104,7 @@ public class ReportUsersAndGroupsCommand implements Action {
             csvPath = Files.createTempFile(TMP_PATH, FILE_NAME, FILE_EXT);
             final Date now = new Date();
             final String storageFolder = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss").format(now);
-            final String dateStamp = new SimpleDateFormat("yyyyMMdd").format(now);
+            final String dateStamp = new SimpleDateFormat("yyyyMMdd-HHmm").format(now);
             final String csvFileName = FILE_NAME + "-" + dateStamp + FILE_EXT;
             final File csvFile = csvPath.toFile();
             try (final FileOutputStream fileOutputStream = new FileOutputStream(csvFile); final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8); final CSVWriter csvWriter = new CSVWriter(outputStreamWriter); final InputStream csvInputStream = new FileInputStream(csvFile);) {
