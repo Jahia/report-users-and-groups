@@ -46,6 +46,14 @@ describe('Report Users and Groups', () => {
                 });
         });
 
+        it('does not expose j:password', () => {
+            cy.apollo({query: getUserProperties})
+                .its('data.reportUsersAndGroupsUserProperties')
+                .then((props: string[]) => {
+                    expect(props).not.to.include('j:password');
+                });
+        });
+
         it('returns properties in alphabetical order', () => {
             cy.apollo({query: getUserProperties})
                 .its('data.reportUsersAndGroupsUserProperties')

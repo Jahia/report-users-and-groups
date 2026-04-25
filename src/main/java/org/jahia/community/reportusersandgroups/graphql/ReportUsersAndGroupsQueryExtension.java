@@ -51,7 +51,7 @@ public class ReportUsersAndGroupsQueryExtension {
             final ExtendedNodeType userType = NodeTypeRegistry.getInstance().getNodeType("jnt:user");
             return Arrays.stream(userType.getPropertyDefinitions())
                     .map(ExtendedPropertyDefinition::getName)
-                    .filter(name -> !name.startsWith("jcr:") && !name.startsWith("nt:") && !name.startsWith("rep:"))
+                    .filter(name -> !name.startsWith("jcr:") && !name.startsWith("nt:") && !name.startsWith("rep:") && !name.equals("j:password"))
                     .distinct()
                     .sorted()
                     .collect(Collectors.toList());
