@@ -102,8 +102,10 @@ public class ReportUsersAndGroupsCommand implements Action {
         Path csvPath = null;
         try {
             csvPath = Files.createTempFile(TMP_PATH, FILE_NAME, FILE_EXT);
-            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
-            final String storageFolder = dateFormat.format(new Date());
+            final Date now = new Date();
+            final String storageFolder = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss").format(now);
+            final String dateStamp = new SimpleDateFormat("yyyyMMdd").format(now);
+            final String csvFileName = FILE_NAME + "-" + dateStamp + FILE_EXT;
             final File csvFile = csvPath.toFile();
             try (final FileOutputStream fileOutputStream = new FileOutputStream(csvFile); final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8); final CSVWriter csvWriter = new CSVWriter(outputStreamWriter); final InputStream csvInputStream = new FileInputStream(csvFile);) {
                 final List<String> headers = new ArrayList<>();
@@ -128,7 +130,7 @@ public class ReportUsersAndGroupsCommand implements Action {
                 }
                 csvWriter.flush();
                 final JCRNodeWrapper jcrNode = mkdirs(rootPath + "/report-users-and-groups/" + storageFolder);
-                jcrNode.uploadFile(FILE_NAME + FILE_EXT, csvInputStream, MediaType.TEXT_PLAIN_VALUE);
+                jcrNode.uploadFile(csvFileName, csvInputStream, MediaType.TEXT_PLAIN_VALUE);
                 jcrNode.saveSession();
             }
         } catch (IOException | RepositoryException ex) {

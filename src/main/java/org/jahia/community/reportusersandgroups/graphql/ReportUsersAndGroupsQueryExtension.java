@@ -31,7 +31,6 @@ public class ReportUsersAndGroupsQueryExtension {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportUsersAndGroupsQueryExtension.class);
     static final String REPORT_FOLDER_NAME = "report-users-and-groups";
-    static final String REPORT_FILE_NAME = "report-users-and-groups.csv";
 
     private ReportUsersAndGroupsQueryExtension() {
     }
@@ -61,10 +60,8 @@ public class ReportUsersAndGroupsQueryExtension {
                         }
                         final String queryStmt = String.format(
                                 "SELECT * FROM [jnt:file] AS f" +
-                                " WHERE ISDESCENDANTNODE(f, '%s')" +
-                                " AND LOCALNAME(f) = '%s'",
-                                JCRContentUtils.sqlEncode(folderPath),
-                                REPORT_FILE_NAME);
+                                " WHERE ISDESCENDANTNODE(f, '%s')",
+                                JCRContentUtils.sqlEncode(folderPath));
                         final NodeIterator it = session.getWorkspace().getQueryManager()
                                 .createQuery(queryStmt, Query.JCR_SQL2)
                                 .execute().getNodes();

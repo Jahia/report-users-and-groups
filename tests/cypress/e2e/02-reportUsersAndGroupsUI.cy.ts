@@ -114,12 +114,13 @@ describe('Report Users and Groups — UI', () => {
             cy.contains('Generated reports').should('be.visible');
         });
 
-        it('shows a download link in the reports table', () => {
+        it('shows a download link with a date-stamped filename', () => {
             cy.login();
             cy.visit(adminPath);
-            cy.contains('a', 'report-users-and-groups.csv')
+            cy.get('a[download]')
                 .should('be.visible')
-                .and('have.attr', 'download', 'report-users-and-groups.csv');
+                .and('have.attr', 'download')
+                .and('match', /^report-users-and-groups-\d{8}\.csv$/);
         });
 
         it('shows a delete button for each report row', () => {
