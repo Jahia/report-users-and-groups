@@ -43,10 +43,36 @@ describe('Report Users and Groups — UI', () => {
             cy.get('#rug-csv-root-path').should('be.visible').and('have.value', DEFAULT_CSV_ROOT_PATH);
         });
 
-        it('shows the properties input', () => {
+        it('shows the properties checkbox list', () => {
             cy.login();
             cy.visit(adminPath);
             cy.get('#rug-properties').should('be.visible');
+        });
+
+        it('properties list contains known jnt:user properties', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-properties').within(() => {
+                cy.contains('span', 'j:firstName').should('be.visible');
+                cy.contains('span', 'j:lastName').should('be.visible');
+                cy.contains('span', 'j:email').should('be.visible');
+            });
+        });
+
+        it('j:firstName and j:lastName are pre-checked by default', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-properties').within(() => {
+                cy.contains('label', 'j:firstName').find('input[type=checkbox]').should('be.checked');
+                cy.contains('label', 'j:lastName').find('input[type=checkbox]').should('be.checked');
+            });
+        });
+
+        it('shows the Select all and Clear all buttons', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.contains('button', 'Select all').should('be.visible');
+            cy.contains('button', 'Clear all').should('be.visible');
         });
 
         it('shows the Generate report button', () => {
@@ -69,6 +95,40 @@ describe('Report Users and Groups — UI', () => {
         });
     });
 
+    // ─── Admin UI — Property Selection ───────────────────────────────────────────
+
+    describe('Admin UI — Property Selection', () => {
+        it('Select all checks all checkboxes', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.contains('button', 'Select all').click();
+            cy.get('#rug-properties input[type=checkbox]').each($cb => {
+                cy.wrap($cb).should('be.checked');
+            });
+        });
+
+        it('Clear all unchecks all checkboxes', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.contains('button', 'Clear all').click();
+            cy.get('#rug-properties input[type=checkbox]').each($cb => {
+                cy.wrap($cb).should('not.be.checked');
+            });
+        });
+
+        it('individual checkbox can be toggled', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-properties').within(() => {
+                cy.contains('label', 'j:email').find('input[type=checkbox]').as('emailCb');
+            });
+            cy.get('@emailCb').check();
+            cy.get('@emailCb').should('be.checked');
+            cy.get('@emailCb').uncheck();
+            cy.get('@emailCb').should('not.be.checked');
+        });
+    });
+
     // ─── Admin UI — Ctrl+Enter shortcut ──────────────────────────────────────────
 
     describe('Admin UI — Ctrl+Enter shortcut', () => {
@@ -79,10 +139,10 @@ describe('Report Users and Groups — UI', () => {
             cy.contains('Report generated successfully.', {timeout: 120000}).should('be.visible');
         });
 
-        it('submits the form via Ctrl+Enter on the properties field', () => {
+        it('submits the form via Ctrl+Enter on the properties list', () => {
             cy.login();
             cy.visit(adminPath);
-            cy.get('#rug-properties').type('{ctrl+enter}');
+            cy.get('#rug-properties').trigger('keydown', {key: 'Enter', ctrlKey: true});
             cy.contains('Report generated successfully.', {timeout: 120000}).should('be.visible');
         });
 

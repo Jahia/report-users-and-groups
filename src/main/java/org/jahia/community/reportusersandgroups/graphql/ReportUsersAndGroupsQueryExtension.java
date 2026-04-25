@@ -13,16 +13,23 @@ import org.jahia.modules.graphql.provider.dxm.security.GraphQLRequiresPermission
 import org.jahia.osgi.BundleUtils;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
+import org.jahia.services.content.nodetypes.ExtendedNodeType;
+import org.jahia.services.content.nodetypes.ExtendedPropertyDefinition;
+import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @GraphQLTypeExtension(DXGraphQLProvider.Query.class)
 @GraphQLName("ReportUsersAndGroupsQueries")
@@ -33,6 +40,25 @@ public class ReportUsersAndGroupsQueryExtension {
     static final String REPORT_FOLDER_NAME = "report-users-and-groups";
 
     private ReportUsersAndGroupsQueryExtension() {
+    }
+
+    @GraphQLField
+    @GraphQLName("reportUsersAndGroupsUserProperties")
+    @GraphQLDescription("Returns all property names defined on the jnt:user node type, sorted alphabetically")
+    @GraphQLRequiresPermission("admin")
+    public static List<String> userProperties() {
+        try {
+            final ExtendedNodeType userType = NodeTypeRegistry.getInstance().getNodeType("jnt:user");
+            return Arrays.stream(userType.getPropertyDefinitions())
+                    .map(ExtendedPropertyDefinition::getName)
+                    .filter(name -> !name.startsWith("jcr:") && !name.startsWith("nt:") && !name.startsWith("rep:"))
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.toList());
+        } catch (NoSuchNodeTypeException e) {
+            LOGGER.error("jnt:user node type not found", e);
+            return Collections.emptyList();
+        }
     }
 
     @GraphQLField

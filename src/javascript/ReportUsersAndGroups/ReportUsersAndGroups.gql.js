@@ -1,5 +1,11 @@
 import {gql} from '@apollo/client';
 
+export const GET_USER_PROPERTIES = gql`
+    query GetUserProperties {
+        reportUsersAndGroupsUserProperties
+    }
+`;
+
 export const GET_STATUS = gql`
     query ReportUsersAndGroupsStatus($csvRootPath: String!) {
         reportUsersAndGroupsIsGenerating

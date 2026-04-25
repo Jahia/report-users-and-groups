@@ -141,6 +141,58 @@
     }
 }
 
+.rug_propertiesControls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.rug_controlBtn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #555;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 8px;
+
+    &:hover {
+        background: #f5f5f5;
+        border-color: #0077cc;
+        color: #0077cc;
+    }
+}
+
+.rug_propertiesList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 10px;
+    background: #fafafa;
+
+    &:focus-within {
+        border-color: #0077cc;
+    }
+}
+
+.rug_propertyItem {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    min-width: 160px;
+
+    input[type='checkbox'] {
+        cursor: pointer;
+    }
+}
+
 .rug_deleteBtn {
     background: none;
     border: 1px solid #ef9a9a;
