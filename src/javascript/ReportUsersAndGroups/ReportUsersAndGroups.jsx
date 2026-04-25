@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next';
 import {Button, Loader, Typography} from '@jahia/moonstone';
 import styles from './ReportUsersAndGroups.scss';
 import {DELETE_REPORT, GENERATE_REPORT, GET_STATUS, GET_USER_PROPERTIES} from './ReportUsersAndGroups.gql';
+import {FolderPicker} from './FolderPicker';
 
 const DEFAULT_CSV_ROOT_PATH = '/sites/systemsite/files';
 const DEFAULT_SELECTED_PROPERTIES = ['j:firstName', 'j:lastName'];
@@ -27,6 +28,7 @@ export const ReportUsersAndGroupsAdmin = () => {
     const [csvRootPath, setCsvRootPath] = useState(DEFAULT_CSV_ROOT_PATH);
     const [selectedProperties, setSelectedProperties] = useState(DEFAULT_SELECTED_PROPERTIES);
     const [generateStatus, setGenerateStatus] = useState(null);
+    const [pickerOpen, setPickerOpen] = useState(false);
 
     const {data: propsData} = useQuery(GET_USER_PROPERTIES, {fetchPolicy: 'cache-first'});
     const availableProperties = propsData?.reportUsersAndGroupsUserProperties ?? [];
@@ -109,17 +111,26 @@ export const ReportUsersAndGroupsAdmin = () => {
                     <label className={styles.rug_label} htmlFor="rug-csv-root-path">
                         {t('label.csvRootPath')}
                     </label>
-                    <input
-                        type="text"
-                        id="rug-csv-root-path"
-                        className={styles.rug_input}
-                        value={csvRootPath}
-                        onChange={e => {
-                            setCsvRootPath(e.target.value);
-                            setGenerateStatus(null);
-                        }}
-                        onKeyDown={handleKeyDown}
-                    />
+                    <div className={styles.rug_inputRow}>
+                        <input
+                            type="text"
+                            id="rug-csv-root-path"
+                            className={styles.rug_input}
+                            value={csvRootPath}
+                            onChange={e => {
+                                setCsvRootPath(e.target.value);
+                                setGenerateStatus(null);
+                            }}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <button
+                            type="button"
+                            className={styles.rug_browseBtn}
+                            onClick={() => setPickerOpen(true)}
+                        >
+                            {t('label.browse')}
+                        </button>
+                    </div>
                     <span className={styles.rug_hint}>{t('label.csvRootPathHint')}</span>
                 </div>
 
@@ -225,6 +236,18 @@ export const ReportUsersAndGroupsAdmin = () => {
                         </tbody>
                     </table>
                 </div>
+            )}
+
+            {pickerOpen && (
+                <FolderPicker
+                    initialPath={csvRootPath || '/sites/systemsite/files'}
+                    onSelect={path => {
+                        setCsvRootPath(path);
+                        setGenerateStatus(null);
+                        setPickerOpen(false);
+                    }}
+                    onClose={() => setPickerOpen(false)}
+                />
             )}
         </div>
     );

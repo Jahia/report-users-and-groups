@@ -1,5 +1,22 @@
 import {gql} from '@apollo/client';
 
+export const GET_FOLDER_CHILDREN = gql`
+    query FolderChildren($path: String!) {
+        jcr {
+            nodeByPath(path: $path) {
+                path
+                name
+                children(typesFilter: {types: ["jnt:folder", "jnt:virtualsite"], multi: ANY}) {
+                    nodes {
+                        path
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;
+
 export const GET_USER_PROPERTIES = gql`
     query GetUserProperties {
         reportUsersAndGroupsUserProperties
