@@ -59,6 +59,16 @@ describe('Report Users and Groups — UI', () => {
             });
         });
 
+        it('properties list does not expose j:password or wildcard entries', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-properties span').then($spans => {
+                const labels = [...$spans].map(s => s.textContent?.trim());
+                expect(labels).not.to.include('j:password');
+                expect(labels).not.to.include('*');
+            });
+        });
+
         it('j:firstName and j:lastName are pre-checked by default', () => {
             cy.login();
             cy.visit(adminPath);
