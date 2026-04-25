@@ -54,6 +54,14 @@ describe('Report Users and Groups', () => {
                 });
         });
 
+        it('does not expose wildcard property definitions', () => {
+            cy.apollo({query: getUserProperties})
+                .its('data.reportUsersAndGroupsUserProperties')
+                .then((props: string[]) => {
+                    expect(props).not.to.include('*');
+                });
+        });
+
         it('returns properties in alphabetical order', () => {
             cy.apollo({query: getUserProperties})
                 .its('data.reportUsersAndGroupsUserProperties')
