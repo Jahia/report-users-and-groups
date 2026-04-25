@@ -1,0 +1,2 @@
+- karafCommand: "log:log 'START - report-users-and-groups provisioning'"
+- karafCommand: "log:log 'END - report-users-and-groups provisioning'"

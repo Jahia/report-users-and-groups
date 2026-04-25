@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [[ -f .env ]]; then
+  set -a
+  source .env
+  set +a
+else
+  source .env.example
+  set -a
+  export $(cat .env.example | sed 's/=.*//g'| xargs)
+  set +a
+fi
+JAHIA_VERSION=${JAHIA_VERSION:-LATEST}
+JAHIA_IMAGE=${JAHIA_IMAGE:-ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT}
+TESTS_IMAGE=${TESTS_IMAGE:-jahia/report-users-and-groups:latest}
+MODULE_ID=${MODULE_ID:-report-users-and-groups}
+MANIFEST=${MANIFEST:-provisioning-manifest-snapshot.yml}
+JAHIA_URL=${JAHIA_URL:-http://jahia:8080}
+SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD:-root1234}
+JAHIA_LICENSE=${JAHIA_LICENSE:-""}
+JAHIA_HOST=${JAHIA_HOST:-jahia}

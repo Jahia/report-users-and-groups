@@ -1,0 +1,20 @@
+{
+  "label": {
+    "menu_entry": "Report Users & Groups",
+    "title": "Report Users & Groups",
+    "description": "Generate a CSV report of all Jahia users across all sites, including their group memberships. Reports are stored in JCR and can be downloaded directly from this page.",
+    "csvRootPath": "JCR root path",
+    "csvRootPathHint": "JCR path where report files will be stored (e.g. /sites/systemsite/files)",
+    "properties": "User properties to export",
+    "propertiesHint": "Comma-separated list of user property names to include as columns (e.g. j:firstName,j:lastName,j:email)",
+    "generate": "Generate report",
+    "generating": "Generating report, please wait…",
+    "generateSuccess": "Report generated successfully.",
+    "generateError": "An error occurred while generating the report.",
+    "reportsTitle": "Generated reports",
+    "colDate": "Date",
+    "colFile": "File",
+    "colActions": "Actions",
+    "delete": "Delete"
+  }
+}

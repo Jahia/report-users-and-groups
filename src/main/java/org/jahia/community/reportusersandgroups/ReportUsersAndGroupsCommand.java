@@ -67,7 +67,12 @@ public class ReportUsersAndGroupsCommand implements Action {
 
     @Override
     public Object execute() throws RepositoryException {
-        ReportUsersAndGroupsCommand.reportUsersAndGroups(rootCsvPath, userPropertiesToExport);
+        final ReportUsersAndGroupsService svc = org.jahia.osgi.BundleUtils.getOsgiService(ReportUsersAndGroupsService.class, null);
+        if (svc != null) {
+            svc.generate(rootCsvPath, userPropertiesToExport);
+        } else {
+            ReportUsersAndGroupsCommand.reportUsersAndGroups(rootCsvPath, userPropertiesToExport);
+        }
         return null;
     }
 

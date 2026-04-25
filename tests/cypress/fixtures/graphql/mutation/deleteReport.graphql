@@ -1,0 +1,3 @@
+mutation DeleteReport($path: String!) {
+    reportUsersAndGroupsDeleteReport(path: $path)
+}
