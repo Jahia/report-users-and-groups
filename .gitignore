@@ -1,15 +1,26 @@
-/src/main/import/repository.xml.generated
-/target/
+/.claude
 /.classpath
 /.project
 /.settings
-/*.iml
-repository.xml.generated
 .idea
 *.iml
-/src/main/resources/javascript/apps
-/node
-/node_modules
-/yarn-error.log
-/.yalc
-/yarn.lock
+*.ipr
+target
+/nbactions.xml
+
+/pom.xml.tag
+/release.properties
+/pom.xml.releaseBackup
+/pom.xml.next
+
+# Node / frontend build
+node_modules
+node
+yarn-error.log
+.yarn-integrity
+# Webpack chunks (only the main bundle is committed)
+src/main/resources/javascript/apps
+
+.env
+**/install-state.gz
+.codegraph
