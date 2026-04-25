@@ -69,6 +69,32 @@ describe('Report Users and Groups — UI', () => {
         });
     });
 
+    // ─── Admin UI — Ctrl+Enter shortcut ──────────────────────────────────────────
+
+    describe('Admin UI — Ctrl+Enter shortcut', () => {
+        it('submits the form via Ctrl+Enter on the root path field', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-csv-root-path').type('{ctrl+enter}');
+            cy.contains('Report generated successfully.', {timeout: 120000}).should('be.visible');
+        });
+
+        it('submits the form via Ctrl+Enter on the properties field', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-properties').type('{ctrl+enter}');
+            cy.contains('Report generated successfully.', {timeout: 120000}).should('be.visible');
+        });
+
+        it('Ctrl+Enter does nothing when root path is empty', () => {
+            cy.login();
+            cy.visit(adminPath);
+            cy.get('#rug-csv-root-path').clear();
+            cy.get('#rug-csv-root-path').type('{ctrl+enter}');
+            cy.get('[class*="rug_alert--success"]').should('not.exist');
+        });
+    });
+
     // ─── Admin UI — Generation ────────────────────────────────────────────────────
 
     describe('Admin UI — Generation', () => {

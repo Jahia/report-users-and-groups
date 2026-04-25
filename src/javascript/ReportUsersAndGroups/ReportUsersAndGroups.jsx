@@ -97,7 +97,15 @@ export const ReportUsersAndGroupsAdmin = () => {
                         id="rug-csv-root-path"
                         className={styles.rug_input}
                         value={csvRootPath}
-                        onChange={e => setCsvRootPath(e.target.value)}
+                        onChange={e => {
+                            setCsvRootPath(e.target.value);
+                            setGenerateStatus(null);
+                        }}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' && e.ctrlKey && csvRootPath.trim()) {
+                                handleGenerate();
+                            }
+                        }}
                     />
                     <span className={styles.rug_hint}>{t('label.csvRootPathHint')}</span>
                 </div>
@@ -112,6 +120,11 @@ export const ReportUsersAndGroupsAdmin = () => {
                         className={styles.rug_input}
                         value={properties}
                         onChange={e => setProperties(e.target.value)}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' && e.ctrlKey && csvRootPath.trim()) {
+                                handleGenerate();
+                            }
+                        }}
                     />
                     <span className={styles.rug_hint}>{t('label.propertiesHint')}</span>
                 </div>
