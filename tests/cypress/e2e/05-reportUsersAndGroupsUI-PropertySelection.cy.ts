@@ -34,7 +34,7 @@ describe('Report Users and Groups — UI', () => {
         it('Select all checks all checkboxes', () => {
             cy.login();
             cy.visit(adminPath);
-            cy.contains('button', 'Select all').click();
+            cy.get('#rug-select-all').click();
             cy.get('#rug-properties input[type=checkbox]').each($cb => {
                 cy.wrap($cb).should('be.checked');
             });
@@ -43,7 +43,7 @@ describe('Report Users and Groups — UI', () => {
         it('Clear all unchecks all checkboxes', () => {
             cy.login();
             cy.visit(adminPath);
-            cy.contains('button', 'Clear all').click();
+            cy.get('#rug-clear-all').click();
             cy.get('#rug-properties input[type=checkbox]').each($cb => {
                 cy.wrap($cb).should('not.be.checked');
             });

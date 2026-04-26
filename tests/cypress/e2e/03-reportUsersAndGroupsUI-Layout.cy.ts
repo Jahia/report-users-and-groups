@@ -81,8 +81,8 @@ describe('Report Users and Groups — UI', () => {
         it('shows the Select all and Clear all buttons', () => {
             cy.login();
             cy.visit(adminPath);
-            cy.contains('button', 'Select all').should('be.visible');
-            cy.contains('button', 'Clear all').should('be.visible');
+            cy.get('#rug-select-all').should('be.visible');
+            cy.get('#rug-clear-all').should('be.visible');
         });
 
         it('shows the Browse button next to the root path input', () => {

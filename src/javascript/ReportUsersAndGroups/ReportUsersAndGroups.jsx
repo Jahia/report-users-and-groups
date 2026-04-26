@@ -139,10 +139,10 @@ export const ReportUsersAndGroupsAdmin = () => {
                         {t('label.properties')}
                     </label>
                     <div className={styles.rug_propertiesControls}>
-                        <button type="button" className={styles.rug_controlBtn} onClick={handleSelectAll}>
+                        <button id="rug-select-all" type="button" className={styles.rug_controlBtn} onClick={handleSelectAll}>
                             {t('label.selectAll')}
                         </button>
-                        <button type="button" className={styles.rug_controlBtn} onClick={handleClearAll}>
+                        <button id="rug-clear-all" type="button" className={styles.rug_controlBtn} onClick={handleClearAll}>
                             {t('label.clearAll')}
                         </button>
                     </div>
