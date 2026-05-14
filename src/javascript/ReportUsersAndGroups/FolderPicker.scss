@@ -29,7 +29,7 @@
 }
 
 .fp_title {
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: #333;
 }
@@ -38,14 +38,21 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    color: #888;
+    font-size: 1rem;
+    /* #767676 on #f7f7f7 ≈ 4.38:1 — replaces #888 which was ~3.16:1 */
+    color: #767676;
     padding: 2px 6px;
     border-radius: 4px;
+    font-family: inherit;
 
     &:hover {
         background: #e0e0e0;
         color: #333;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #0077cc;
+        outline-offset: 2px;
     }
 }
 
@@ -57,7 +64,7 @@
     padding: 8px 18px;
     border-bottom: 1px solid #e0e0e0;
     background: #fafafa;
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 
 .fp_crumb {
@@ -65,12 +72,18 @@
     border: none;
     cursor: pointer;
     color: #0077cc;
-    font-size: 12px;
+    font-size: 0.75rem;
+    font-family: inherit;
     padding: 1px 3px;
     border-radius: 3px;
 
     &:hover {
         background: #e8f0fe;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #0077cc;
+        outline-offset: 2px;
     }
 
     &--active {
@@ -85,15 +98,17 @@
 }
 
 .fp_crumbLocked {
-    font-size: 12px;
-    color: #bbb;
+    font-size: 0.75rem;
+    /* #767676 on #fafafa ≈ 4.48:1 — replaces #bbb which was ~2.32:1 (fails SC 1.4.3) */
+    color: #767676;
     padding: 1px 3px;
     cursor: default;
     user-select: none;
 }
 
 .fp_crumbSep {
-    color: #bbb;
+    /* #767676 on #fafafa ≈ 4.48:1 — replaces #bbb which was ~2.32:1 */
+    color: #767676;
     user-select: none;
 }
 
@@ -106,32 +121,43 @@
 
 .fp_status {
     padding: 16px 18px;
-    font-size: 13px;
-    color: #888;
+    font-size: 0.8125rem;
+    /* #5c6370 on white ≈ 5.5:1 — replaces #888 which was 3.54:1 (fails at 13px) */
+    color: #5c6370;
     font-style: italic;
 }
 
 .fp_folderBtn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
     width: 100%;
     text-align: left;
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 0.8125rem;
+    font-family: inherit;
     padding: 7px 18px;
     color: #333;
+
+    @media (prefers-reduced-motion: no-preference) {
+        transition: background-color 0.15s;
+    }
 
     &:hover {
         background: #f0f7ff;
         color: #0077cc;
     }
+
+    &:focus-visible {
+        outline: 2px solid #0077cc;
+        outline-offset: -2px;
+    }
 }
 
 .fp_folderIcon {
-    font-size: 15px;
+    font-size: 0.9375rem;
     flex-shrink: 0;
 }
 
@@ -139,14 +165,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 0.75rem;
     padding: 12px 18px;
     border-top: 1px solid #e0e0e0;
     background: #fafafa;
 }
 
 .fp_selected {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #555;
     background: #f0f0f0;
     border-radius: 3px;
@@ -160,6 +186,6 @@
 
 .fp_actions {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
     flex-shrink: 0;
 }

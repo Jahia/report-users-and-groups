@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@apollo/client';
 import {useTranslation} from 'react-i18next';
 import {Button, Loader, Typography} from '@jahia/moonstone';
@@ -29,6 +29,12 @@ export const ReportUsersAndGroupsAdmin = () => {
     const [selectedProperties, setSelectedProperties] = useState(DEFAULT_SELECTED_PROPERTIES);
     const [generateStatus, setGenerateStatus] = useState(null);
     const [pickerOpen, setPickerOpen] = useState(false);
+    const browseBtnRef = useRef(null);
+    const generateLiveRef = useRef(null);
+
+    useEffect(() => {
+        document.title = `${t('label.title')} — Jahia Administration`;
+    }, [t]);
 
     const {data: propsData} = useQuery(GET_USER_PROPERTIES, {fetchPolicy: 'cache-first'});
     const availableProperties = propsData?.reportUsersAndGroupsUserProperties ?? [];
@@ -70,6 +76,8 @@ export const ReportUsersAndGroupsAdmin = () => {
             console.error('Failed to generate report:', err);
             setGenerateStatus('error');
         }
+
+        setTimeout(() => generateLiveRef.current?.focus(), 50);
     };
 
     const handleDelete = async path => {
@@ -96,8 +104,35 @@ export const ReportUsersAndGroupsAdmin = () => {
         }
     };
 
+    const generateLiveMsg = generateStatus === 'success' ? t('label.generateSuccess') :
+        generateStatus === 'error' ? t('label.generateError') : '';
+
+    const handlePickerClose = () => {
+        setPickerOpen(false);
+        setTimeout(() => browseBtnRef.current?.focus(), 50);
+    };
+
+    const handlePickerSelect = path => {
+        setCsvRootPath(path);
+        setGenerateStatus(null);
+        setPickerOpen(false);
+        setTimeout(() => browseBtnRef.current?.focus(), 50);
+    };
+
     return (
         <div className={styles.rug_container}>
+            {/* Persistent live region — always in DOM so AT registers it before status changes */}
+            <div
+                ref={generateLiveRef}
+                tabIndex={-1}
+                role={generateStatus === 'error' ? 'alert' : 'status'}
+                aria-live={generateStatus === 'error' ? 'assertive' : 'polite'}
+                aria-atomic="true"
+                className={styles.rug_sr_only}
+            >
+                {generateLiveMsg}
+            </div>
+
             <div className={styles.rug_header}>
                 <h2>{t('label.title')}</h2>
             </div>
@@ -117,6 +152,7 @@ export const ReportUsersAndGroupsAdmin = () => {
                             id="rug-csv-root-path"
                             className={styles.rug_input}
                             value={csvRootPath}
+                            aria-describedby="rug-csv-root-hint"
                             onChange={e => {
                                 setCsvRootPath(e.target.value);
                                 setGenerateStatus(null);
@@ -124,6 +160,7 @@ export const ReportUsersAndGroupsAdmin = () => {
                             onKeyDown={handleKeyDown}
                         />
                         <button
+                            ref={browseBtnRef}
                             type="button"
                             className={styles.rug_browseBtn}
                             onClick={() => setPickerOpen(true)}
@@ -131,13 +168,14 @@ export const ReportUsersAndGroupsAdmin = () => {
                             {t('label.browse')}
                         </button>
                     </div>
-                    <span className={styles.rug_hint}>{t('label.csvRootPathHint')}</span>
+                    <span id="rug-csv-root-hint" className={styles.rug_hint}>{t('label.csvRootPathHint')}</span>
                 </div>
 
                 <div className={styles.rug_fieldGroup}>
-                    <label className={styles.rug_label} id="rug-properties-label">
+                    {/* span + aria-labelledby on group — <label> without htmlFor is incorrect semantics */}
+                    <span id="rug-properties-label" className={styles.rug_label}>
                         {t('label.properties')}
-                    </label>
+                    </span>
                     <div className={styles.rug_propertiesControls}>
                         <button id="rug-select-all" type="button" className={styles.rug_controlBtn} onClick={handleSelectAll}>
                             {t('label.selectAll')}
@@ -150,6 +188,7 @@ export const ReportUsersAndGroupsAdmin = () => {
                         id="rug-properties"
                         role="group"
                         aria-labelledby="rug-properties-label"
+                        aria-describedby="rug-properties-hint"
                         className={styles.rug_propertiesList}
                         onKeyDown={handleKeyDown}
                         tabIndex={-1}
@@ -165,26 +204,27 @@ export const ReportUsersAndGroupsAdmin = () => {
                             </label>
                         ))}
                     </div>
-                    <span className={styles.rug_hint}>{t('label.propertiesHint')}</span>
+                    <span id="rug-properties-hint" className={styles.rug_hint}>{t('label.propertiesHint')}</span>
                 </div>
             </div>
 
             {generateStatus === 'success' && (
-                <div className={`${styles.rug_alert} ${styles['rug_alert--success']}`}>
-                    {t('label.generateSuccess')}
+                <div aria-hidden="true" className={`${styles.rug_alert} ${styles['rug_alert--success']}`}>
+                    <span className={styles.rug_alertIcon}>✓</span> {t('label.generateSuccess')}
                 </div>
             )}
             {generateStatus === 'error' && (
-                <div className={`${styles.rug_alert} ${styles['rug_alert--error']}`}>
-                    {t('label.generateError')}
+                <div aria-hidden="true" className={`${styles.rug_alert} ${styles['rug_alert--error']}`}>
+                    <span className={styles.rug_alertIcon}>✕</span> {t('label.generateError')}
                 </div>
             )}
 
             <div className={styles.rug_actions}>
                 {generating ? (
-                    <div className={styles.rug_loading}>
+                    <div className={styles.rug_loading} role="status">
+                        <span className={styles.rug_sr_only}>{t('label.generating')}</span>
                         <Loader size="big"/>
-                        <Typography className={styles.rug_loadingText}>
+                        <Typography className={styles.rug_loadingText} aria-hidden="true">
                             {t('label.generating')}
                         </Typography>
                     </div>
@@ -204,9 +244,9 @@ export const ReportUsersAndGroupsAdmin = () => {
                     <table className={styles.rug_table}>
                         <thead>
                             <tr>
-                                <th>{t('label.colDate')}</th>
-                                <th>{t('label.colFile')}</th>
-                                <th>{t('label.colActions')}</th>
+                                <th scope="col">{t('label.colDate')}</th>
+                                <th scope="col">{t('label.colFile')}</th>
+                                <th scope="col">{t('label.colActions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -226,6 +266,7 @@ export const ReportUsersAndGroupsAdmin = () => {
                                         <button
                                             type="button"
                                             className={styles.rug_deleteBtn}
+                                            aria-label={`${t('label.delete')} ${fileNameFromPath(file.path)}`}
                                             onClick={() => handleDelete(file.path)}
                                         >
                                             {t('label.delete')}
@@ -241,12 +282,8 @@ export const ReportUsersAndGroupsAdmin = () => {
             {pickerOpen && (
                 <FolderPicker
                     initialPath={csvRootPath || '/sites/systemsite/files'}
-                    onSelect={path => {
-                        setCsvRootPath(path);
-                        setGenerateStatus(null);
-                        setPickerOpen(false);
-                    }}
-                    onClose={() => setPickerOpen(false)}
+                    onSelect={handlePickerSelect}
+                    onClose={handlePickerClose}
                 />
             )}
         </div>

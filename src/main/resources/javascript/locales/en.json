@@ -7,6 +7,8 @@
     "csvRootPathHint": "JCR path where report files will be stored (e.g. /sites/systemsite/files)",
     "browse": "Browse…",
     "pickerTitle": "Select a folder",
+    "pickerClose": "Close folder picker",
+    "pickerBreadcrumb": "Folder navigation",
     "pickerSelect": "Select this folder",
     "pickerCancel": "Cancel",
     "pickerEmpty": "No subfolders",
