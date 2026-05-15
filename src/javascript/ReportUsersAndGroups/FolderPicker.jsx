@@ -86,18 +86,23 @@ export const FolderPicker = ({initialPath, onSelect, onClose}) => {
     };
 
     return (
-        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-        <div
-            className={styles.fp_overlay}
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('label.pickerTitle')}
-            onKeyDown={handleKeyDown}
-        >
-            <div ref={modalRef} className={styles.fp_modal}>
+        <div className={styles.fp_overlay}>
+            {/* CRITICAL-01: role="dialog" + aria-modal + aria-label on the visible panel element,
+                not the backdrop overlay. onKeyDown here so Tab-trap queries the correct ref. */}
+            <div
+                ref={modalRef}
+                className={styles.fp_modal}
+                role="dialog"
+                aria-modal="true"
+                aria-label={t('label.pickerTitle')}
+                onKeyDown={handleKeyDown}
+            >
                 <div className={styles.fp_header}>
                     <span className={styles.fp_title}>{t('label.pickerTitle')}</span>
-                    <button type="button" className={styles.fp_closeBtn} aria-label={t('label.pickerClose')} onClick={onClose}>✕</button>
+                    {/* MINOR-08: aria-hidden on ✕ glyph — aria-label on button is the accessible name */}
+                    <button type="button" className={styles.fp_closeBtn} aria-label={t('label.pickerClose')} onClick={onClose}>
+                        <span aria-hidden="true">✕</span>
+                    </button>
                 </div>
 
                 <nav aria-label={t('label.pickerBreadcrumb')} className={styles.fp_breadcrumb}>
@@ -112,13 +117,21 @@ export const FolderPicker = ({initialPath, onSelect, onClose}) => {
                                 {i > 0 && <span className={styles.fp_crumbSep} aria-hidden="true">/</span>}
                                 {isAboveFloor ? (
                                     <span className={styles.fp_crumbLocked}>{part}</span>
+                                ) : isActive ? (
+                                    /* MAJOR-04: active crumb is a <span> with aria-current="location",
+                                       not a <button disabled> — disabled removes it from tab order and
+                                       "page" is the wrong aria-current value for folder navigation */
+                                    <span
+                                        className={`${styles.fp_crumb} ${styles['fp_crumb--active']}`}
+                                        aria-current="location"
+                                    >
+                                        {part}
+                                    </span>
                                 ) : (
                                     <button
                                         type="button"
-                                        className={`${styles.fp_crumb} ${isActive || isSitesSegment && isActive ? styles['fp_crumb--active'] : ''}`}
+                                        className={styles.fp_crumb}
                                         onClick={() => navigate(pathUpTo(parts, i))}
-                                        disabled={isActive}
-                                        aria-current={isActive ? 'page' : undefined}
                                     >
                                         {part}
                                     </button>

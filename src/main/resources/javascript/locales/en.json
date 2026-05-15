@@ -5,6 +5,7 @@
     "description": "Generate a CSV report of all Jahia users across all sites, including their group memberships. Reports are stored in JCR and can be downloaded directly from this page.",
     "csvRootPath": "JCR root path",
     "csvRootPathHint": "JCR path where report files will be stored (e.g. /sites/systemsite/files)",
+    "csvRootPathRequired": "JCR root path must not be empty.",
     "browse": "Browse…",
     "pickerTitle": "Select a folder",
     "pickerClose": "Close folder picker",

@@ -30,7 +30,8 @@ export const ReportUsersAndGroupsAdmin = () => {
     const [generateStatus, setGenerateStatus] = useState(null);
     const [pickerOpen, setPickerOpen] = useState(false);
     const browseBtnRef = useRef(null);
-    const generateLiveRef = useRef(null);
+    const generateBtnRef = useRef(null);
+    const prevGeneratingRef = useRef(false);
 
     useEffect(() => {
         document.title = `${t('label.title')} — Jahia Administration`;
@@ -62,6 +63,15 @@ export const ReportUsersAndGroupsAdmin = () => {
 
     const generating = mutationGenerating || serverGenerating;
 
+    // SC 2.4.3: return keyboard focus to Generate button when loading completes
+    useEffect(() => {
+        if (prevGeneratingRef.current && !generating) {
+            generateBtnRef.current?.focus();
+        }
+
+        prevGeneratingRef.current = generating;
+    }, [generating]);
+
     const handleGenerate = async () => {
         setGenerateStatus(null);
         try {
@@ -76,8 +86,6 @@ export const ReportUsersAndGroupsAdmin = () => {
             console.error('Failed to generate report:', err);
             setGenerateStatus('error');
         }
-
-        setTimeout(() => generateLiveRef.current?.focus(), 50);
     };
 
     const handleDelete = async path => {
@@ -104,9 +112,6 @@ export const ReportUsersAndGroupsAdmin = () => {
         }
     };
 
-    const generateLiveMsg = generateStatus === 'success' ? t('label.generateSuccess') :
-        generateStatus === 'error' ? t('label.generateError') : '';
-
     const handlePickerClose = () => {
         setPickerOpen(false);
         setTimeout(() => browseBtnRef.current?.focus(), 50);
@@ -121,16 +126,13 @@ export const ReportUsersAndGroupsAdmin = () => {
 
     return (
         <div className={styles.rug_container}>
-            {/* Persistent live region — always in DOM so AT registers it before status changes */}
-            <div
-                ref={generateLiveRef}
-                tabIndex={-1}
-                role={generateStatus === 'error' ? 'alert' : 'status'}
-                aria-live={generateStatus === 'error' ? 'assertive' : 'polite'}
-                aria-atomic="true"
-                className={styles.rug_sr_only}
-            >
-                {generateLiveMsg}
+            {/* CRITICAL-02: two fixed-role live regions always in DOM — AT registers roles at mount.
+                Polite for success, assertive for error. Visible alert divs below are aria-hidden. */}
+            <div role="status" aria-live="polite" aria-atomic="true" className={styles.rug_sr_only}>
+                {generateStatus === 'success' ? t('label.generateSuccess') : ''}
+            </div>
+            <div role="alert" aria-live="assertive" aria-atomic="true" className={styles.rug_sr_only}>
+                {generateStatus === 'error' ? t('label.generateError') : ''}
             </div>
 
             <div className={styles.rug_header}>
@@ -147,12 +149,17 @@ export const ReportUsersAndGroupsAdmin = () => {
                         {t('label.csvRootPath')}
                     </label>
                     <div className={styles.rug_inputRow}>
+                        {/* MAJOR-02: required + aria-required + aria-invalid for mandatory field.
+                            aria-describedby chains both hint and error so AT reads both. */}
                         <input
                             type="text"
                             id="rug-csv-root-path"
                             className={styles.rug_input}
                             value={csvRootPath}
-                            aria-describedby="rug-csv-root-hint"
+                            aria-describedby="rug-csv-root-hint rug-csv-root-error"
+                            required
+                            aria-required="true"
+                            aria-invalid={!csvRootPath.trim() ? 'true' : undefined}
                             onChange={e => {
                                 setCsvRootPath(e.target.value);
                                 setGenerateStatus(null);
@@ -169,6 +176,10 @@ export const ReportUsersAndGroupsAdmin = () => {
                         </button>
                     </div>
                     <span id="rug-csv-root-hint" className={styles.rug_hint}>{t('label.csvRootPathHint')}</span>
+                    {/* SC 3.3.1: always-in-DOM error element — empty when valid, text when invalid */}
+                    <span id="rug-csv-root-error" className={styles.rug_fieldError} aria-live="polite">
+                        {!csvRootPath.trim() ? t('label.csvRootPathRequired') : ''}
+                    </span>
                 </div>
 
                 <div className={styles.rug_fieldGroup}>
@@ -191,12 +202,13 @@ export const ReportUsersAndGroupsAdmin = () => {
                         aria-describedby="rug-properties-hint"
                         className={styles.rug_propertiesList}
                         onKeyDown={handleKeyDown}
-                        tabIndex={-1}
                     >
+                        {/* MAJOR-03: explicit id + htmlFor for reliable AT label association */}
                         {availableProperties.map(name => (
-                            <label key={name} className={styles.rug_propertyItem}>
+                            <label key={name} htmlFor={`rug-prop-${name}`} className={styles.rug_propertyItem}>
                                 <input
                                     type="checkbox"
+                                    id={`rug-prop-${name}`}
                                     checked={selectedProperties.includes(name)}
                                     onChange={() => handlePropertyToggle(name)}
                                 />
@@ -223,13 +235,17 @@ export const ReportUsersAndGroupsAdmin = () => {
                 {generating ? (
                     <div className={styles.rug_loading} role="status">
                         <span className={styles.rug_sr_only}>{t('label.generating')}</span>
-                        <Loader size="big"/>
+                        {/* MAJOR-06: aria-hidden on Loader to prevent duplicate AT announcements */}
+                        <Loader size="big" aria-hidden="true"/>
                         <Typography className={styles.rug_loadingText} aria-hidden="true">
                             {t('label.generating')}
                         </Typography>
                     </div>
                 ) : (
+                    /* MAJOR-05: explicit type="button" to prevent accidental form submission */
                     <Button
+                        ref={generateBtnRef}
+                        type="button"
                         label={t('label.generate')}
                         variant="primary"
                         isDisabled={!csvRootPath.trim()}
@@ -242,6 +258,8 @@ export const ReportUsersAndGroupsAdmin = () => {
                 <div className={styles.rug_reportsSection}>
                     <h3 className={styles.rug_reportsTitle}>{t('label.reportsTitle')}</h3>
                     <table className={styles.rug_table}>
+                        {/* MINOR-10: caption provides programmatic table label for AT */}
+                        <caption className={styles.rug_sr_only}>{t('label.reportsTitle')}</caption>
                         <thead>
                             <tr>
                                 <th scope="col">{t('label.colDate')}</th>
