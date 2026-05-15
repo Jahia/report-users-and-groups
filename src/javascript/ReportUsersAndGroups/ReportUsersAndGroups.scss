@@ -271,6 +271,9 @@
 
     input[type='checkbox'] {
         cursor: pointer;
+        /* appearance: auto ensures width/height apply in older Firefox and Safari */
+        appearance: auto;
+        -webkit-appearance: auto;
         /* SC 2.5.8: explicit 24px touch target size on the checkbox element itself */
         width: 1.5rem;
         height: 1.5rem;
