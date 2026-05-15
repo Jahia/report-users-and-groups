@@ -266,9 +266,15 @@
     color: #333;
     cursor: pointer;
     min-width: 160px;
+    /* SC 2.5.8: label provides ≥24px touch target height for the whole row */
+    min-height: 24px;
 
     input[type='checkbox'] {
         cursor: pointer;
+        /* SC 2.5.8: explicit 24px touch target size on the checkbox element itself */
+        width: 1.5rem;
+        height: 1.5rem;
+        flex-shrink: 0;
     }
 }
 
