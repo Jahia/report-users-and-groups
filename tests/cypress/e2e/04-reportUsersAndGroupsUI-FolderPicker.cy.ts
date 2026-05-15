@@ -50,7 +50,7 @@ describe('Report Users and Groups — UI', () => {
             cy.login();
             cy.visit(adminPath);
             cy.contains('button', 'Browse…').click();
-            cy.get('[aria-label="Close"]').click();
+            cy.get('[aria-label="Close folder picker"]').click();
             cy.contains('Select a folder').should('not.exist');
         });
 
