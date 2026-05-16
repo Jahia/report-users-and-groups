@@ -38,6 +38,7 @@ public class ReportUsersAndGroupsQueryExtension {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportUsersAndGroupsQueryExtension.class);
     static final String REPORT_FOLDER_NAME = "report-users-and-groups";
+    private static final String JCR_PATH_SEPARATOR = "/";
 
     private ReportUsersAndGroupsQueryExtension() {
     }
@@ -76,7 +77,9 @@ public class ReportUsersAndGroupsQueryExtension {
     @GraphQLRequiresPermission("admin")
     public static List<GqlReportFile> listFiles(
             @GraphQLName("csvRootPath") @GraphQLNonNull final String csvRootPath) {
-        final String folderPath = csvRootPath + "/" + REPORT_FOLDER_NAME;
+        final String folderPath = csvRootPath.endsWith(JCR_PATH_SEPARATOR)
+                ? csvRootPath + REPORT_FOLDER_NAME
+                : csvRootPath + JCR_PATH_SEPARATOR + REPORT_FOLDER_NAME;
         try {
             return BundleUtils.getOsgiService(JCRTemplate.class, null)
                     .doExecuteWithSystemSessionAsUser(null, Constants.EDIT_WORKSPACE, null, session -> {

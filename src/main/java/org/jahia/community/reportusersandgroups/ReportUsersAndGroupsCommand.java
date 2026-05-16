@@ -51,8 +51,9 @@ public class ReportUsersAndGroupsCommand implements Action {
     private static final String FILE_EXT = ".csv";
     private static final java.nio.file.Path TMP_PATH = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"));
     private static final long LIMIT = 100L;
+    private static final String CSV_FORMULA_PREFIX_CHARS = "=+-@\t\r";
+
     private static final List<String> SYSTEM_GROUPS = Arrays.asList(
-            "guest",
             "guest",
             "privileged",
             "site-privileged",
@@ -91,7 +92,7 @@ public class ReportUsersAndGroupsCommand implements Action {
             writeCsvData(csvRootPath, usersInfos, userPropertiesToExport);
             final long end = System.currentTimeMillis();
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info(String.format("Finished retrieving the list of users and their groups in %s", DurationFormatUtils.formatDuration(end - start, HUMAN_READABLE_FORMAT, true)));
+                LOGGER.info("Finished retrieving the list of users and their groups in {}", DurationFormatUtils.formatDuration(end - start, HUMAN_READABLE_FORMAT, true));
             }
         } catch (RepositoryException ex) {
             LOGGER.error("Impossible to retrieve users list", ex);
@@ -116,16 +117,16 @@ public class ReportUsersAndGroupsCommand implements Action {
                 csvWriter.writeNext(headers.toArray(new String[headers.size()]));
                 for (UserInfo userInfo : usersInfos) {
                     final List<String> userValues = new ArrayList<>();
-                    userValues.add(userInfo.getSite());
-                    userValues.add(userInfo.getName());
+                    userValues.add(sanitizeCsv(userInfo.getSite()));
+                    userValues.add(sanitizeCsv(userInfo.getName()));
                     for (String userProperty : userPropertiesToExport) {
                         if (userInfo.containsPropertyKey(userProperty)) {
-                            userValues.add(userInfo.getProperty(userProperty));
+                            userValues.add(sanitizeCsv(userInfo.getProperty(userProperty)));
                         } else {
                             userValues.add("");
                         }
                     }
-                    userValues.add(userInfo.getGroups().toString());
+                    userValues.add(sanitizeCsv(userInfo.getGroups().toString()));
                     csvWriter.writeNext(userValues.toArray(new String[userValues.size()]));
                 }
                 csvWriter.flush();
@@ -158,29 +159,47 @@ public class ReportUsersAndGroupsCommand implements Action {
             final JCRNodeIteratorWrapper nodeIterator = query.execute().getNodes();
             while (nodeIterator.hasNext()) {
                 final JCRUserNode userNode = (JCRUserNode) nodeIterator.next();
-                LOGGER.info(userNode.getPath());
-                final UserInfo userInfo = new UserInfo(site, userNode.getName());
-
-                for (String userProperty : userPropertiesToExport) {
-                    if (userNode.hasProperty(userProperty)) {
-                        userInfo.addProperty(userProperty, userNode.getPropertyAsString(userProperty));
-                    }
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Processing user node {}", userNode.getPath());
                 }
-
-                for (String groupPath : JahiaGroupManagerService.getInstance().getMembershipByPath(userNode.getPath())) {
-                    final String[] parts = groupPath.split("\\/");
-                    final String group = parts[parts.length - 1];
-                    if (!SYSTEM_GROUPS.contains(group)) {
-                        userInfo.addGroup(group);
-                    }
-                }
-                users.add(userInfo);
+                users.add(buildUserInfo(userNode, site, userPropertiesToExport));
             }
             hasNextResults = nodeIterator.getSize() == LIMIT;
             offsetMultiplicator++;
         }
         session.refresh(false);
         return users;
+    }
+
+    /**
+     * Prefix CSV cells that start with formula trigger characters (=, +, -, @, TAB, CR)
+     * with a single quote to neutralize CSV/Excel formula injection.
+     */
+    static String sanitizeCsv(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        if (CSV_FORMULA_PREFIX_CHARS.indexOf(value.charAt(0)) >= 0) {
+            return "'" + value;
+        }
+        return value;
+    }
+
+    private static UserInfo buildUserInfo(JCRUserNode userNode, String site, List<String> userPropertiesToExport) throws RepositoryException {
+        final UserInfo userInfo = new UserInfo(site, userNode.getName());
+        for (String userProperty : userPropertiesToExport) {
+            if (userNode.hasProperty(userProperty)) {
+                userInfo.addProperty(userProperty, userNode.getPropertyAsString(userProperty));
+            }
+        }
+        for (String groupPath : JahiaGroupManagerService.getInstance().getMembershipByPath(userNode.getPath())) {
+            final String[] parts = groupPath.split("\\/");
+            final String group = parts[parts.length - 1];
+            if (!SYSTEM_GROUPS.contains(group)) {
+                userInfo.addGroup(group);
+            }
+        }
+        return userInfo;
     }
 
     private static JCRNodeWrapper mkdirs(String path) throws RepositoryException {
