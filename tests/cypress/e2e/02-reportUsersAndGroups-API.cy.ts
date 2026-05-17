@@ -53,7 +53,7 @@ describe('Report Users and Groups', () => {
                 .its('data.reportUsersAndGroupsFiles.0')
                 .should(file => {
                     expect(file).to.have.property('path');
-                    expect(file.path).to.match(/\/report-users-and-groups-\d{8}-\d{4}\.csv$/);
+                    expect(file.path).to.match(/\/report-users-and-groups-\d{8}-\d{6}-\d{3}\.csv$/);
                     expect(file).to.have.property('downloadUrl');
                     expect(file.downloadUrl).to.include('/files/default');
                     expect(file).to.have.property('createdAt');

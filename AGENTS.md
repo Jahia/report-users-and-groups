@@ -20,7 +20,7 @@ Jahia OSGi module that generates CSV reports of all users across all sites, incl
 | `ReportUsersAndGroupsMutationExtension` | GraphQL mutations: `generate`, `deleteReport` |
 | `ReportUsersAndGroupsGraphQLExtensionsProvider` | Wires the extensions into the DXM GraphQL provider |
 
-CSV files are stored at: `<csvRootPath>/report-users-and-groups/<yyyy>/<MM>/<dd>/<HH>/<mm>/<ss>/report-users-and-groups-YYYYMMDD-HHmm.csv`
+CSV files are stored at: `<csvRootPath>/report-users-and-groups/<yyyy>/<MM>/<dd>/<HH>/<mm>/<ss>/report-users-and-groups-YYYYMMDD-HHmmss-SSS.csv`
 
 `reportUsersAndGroups()` iterates global `/users` then each site's `/sites/<name>/users`, paginating with offset × 100 limit, and writes headers + rows using opencsv `CSVWriter`.
 

@@ -47,7 +47,7 @@ Click **Generate report** (or press **Ctrl+Enter**) to start generation. The pag
 
 Each report row provides:
 - The creation date and time
-- A direct download link (`report-users-and-groups-YYYYMMDD-HHmm.csv`)
+- A direct download link (`report-users-and-groups-YYYYMMDD-HHmmss-SSS.csv`)
 - A **Delete** button to remove the file from the JCR
 
 ---
@@ -94,7 +94,7 @@ Configure it via Jahia system properties (e.g. in `jahia.properties` or environm
 
 ## CSV format
 
-The generated file is named `report-users-and-groups-YYYYMMDD-HHmm.csv` and stored under:
+The generated file is named `report-users-and-groups-YYYYMMDD-HHmmss-SSS.csv` and stored under:
 
 ```
 <csvRootPath>/report-users-and-groups/<yyyy>/<MM>/<dd>/<HH>/<mm>/<ss>/

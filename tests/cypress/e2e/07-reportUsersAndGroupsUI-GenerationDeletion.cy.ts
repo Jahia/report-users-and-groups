@@ -53,7 +53,7 @@ describe('Report Users and Groups — UI', () => {
             cy.get('a[download]')
                 .should('be.visible')
                 .and('have.attr', 'download')
-                .and('match', /^report-users-and-groups-\d{8}-\d{4}\.csv$/);
+                .and('match', /^report-users-and-groups-\d{8}-\d{6}-\d{3}\.csv$/);
         });
 
         it('shows a delete button for each report row', () => {
