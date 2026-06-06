@@ -21,7 +21,7 @@
         </property>
         <property name="trigger">
             <bean class="org.quartz.CronTrigger">
-                <property name="name" value="VersionsCleanerJobTrigger"/>
+                <property name="name" value="ReportUsersAndGroupsJobTrigger"/>
                 <property name="cronExpression" value="${jahia.reportsusersandgroups.job.cronExpression:0 30 1 * * ?}"/>
             </bean>
         </property>

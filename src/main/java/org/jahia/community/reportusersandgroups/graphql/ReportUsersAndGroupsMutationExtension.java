@@ -45,12 +45,18 @@ public class ReportUsersAndGroupsMutationExtension {
         return service.generate(csvRootPath, props);
     }
 
+    private static final String REPORT_FOLDER_SEGMENT = "/report-users-and-groups/";
+
     @GraphQLField
     @GraphQLName("reportUsersAndGroupsDeleteReport")
     @GraphQLDescription("Deletes a single report file from JCR by its JCR path")
     @GraphQLRequiresPermission("admin")
     public static Boolean deleteReport(
             @GraphQLName("path") @GraphQLNonNull final String path) {
+        if (!path.contains(REPORT_FOLDER_SEGMENT)) {
+            LOGGER.warn("Rejected deleteReport request for path outside report folder: {}", path);
+            return Boolean.FALSE;
+        }
         try {
             BundleUtils.getOsgiService(JCRTemplate.class, null)
                     .doExecuteWithSystemSessionAsUser(null, Constants.EDIT_WORKSPACE, null, session -> {
