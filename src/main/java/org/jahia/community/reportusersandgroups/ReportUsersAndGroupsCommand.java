@@ -108,7 +108,9 @@ public class ReportUsersAndGroupsCommand implements Action {
             final String dateStamp = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS").format(now);
             final String csvFileName = FILE_NAME + "-" + dateStamp + FILE_EXT;
             final File csvFile = csvPath.toFile();
-            try (final FileOutputStream fileOutputStream = new FileOutputStream(csvFile); final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8); final CSVWriter csvWriter = new CSVWriter(outputStreamWriter); final InputStream csvInputStream = new FileInputStream(csvFile);) {
+            try (final FileOutputStream fileOutputStream = new FileOutputStream(csvFile);
+                    final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+                    final CSVWriter csvWriter = new CSVWriter(outputStreamWriter)) {
                 final List<String> headers = new ArrayList<>();
                 headers.add("site");
                 headers.add("user name");
@@ -129,7 +131,8 @@ public class ReportUsersAndGroupsCommand implements Action {
                     userValues.add(sanitizeCsv(userInfo.getGroups().toString()));
                     csvWriter.writeNext(userValues.toArray(new String[userValues.size()]));
                 }
-                csvWriter.flush();
+            }
+            try (final InputStream csvInputStream = new FileInputStream(csvFile)) {
                 final JCRNodeWrapper jcrNode = mkdirs(rootPath + "/report-users-and-groups/" + storageFolder);
                 jcrNode.uploadFile(csvFileName, csvInputStream, MediaType.TEXT_PLAIN_VALUE);
                 jcrNode.saveSession();
@@ -157,14 +160,16 @@ public class ReportUsersAndGroupsCommand implements Action {
             query.setOffset(offsetMultiplicator * LIMIT);
             query.setLimit(LIMIT);
             final JCRNodeIteratorWrapper nodeIterator = query.execute().getNodes();
+            long pageCount = 0L;
             while (nodeIterator.hasNext()) {
                 final JCRUserNode userNode = (JCRUserNode) nodeIterator.next();
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Processing user node {}", userNode.getPath());
                 }
                 users.add(buildUserInfo(userNode, site, userPropertiesToExport));
+                pageCount++;
             }
-            hasNextResults = nodeIterator.getSize() == LIMIT;
+            hasNextResults = pageCount == LIMIT;
             offsetMultiplicator++;
         }
         session.refresh(false);
