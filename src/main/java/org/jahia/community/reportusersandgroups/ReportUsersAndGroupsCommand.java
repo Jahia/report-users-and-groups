@@ -52,6 +52,8 @@ public class ReportUsersAndGroupsCommand implements Action {
     private static final java.nio.file.Path TMP_PATH = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"));
     private static final long LIMIT = 100L;
     private static final String CSV_FORMULA_PREFIX_CHARS = "=+-@\t\r";
+    private static final String PARENT_SEGMENT = "..";
+    private static final String CURRENT_SEGMENT = ".";
 
     private static final List<String> SYSTEM_GROUPS = Arrays.asList(
             "guest",
@@ -137,8 +139,8 @@ public class ReportUsersAndGroupsCommand implements Action {
                 jcrNode.uploadFile(csvFileName, csvInputStream, MediaType.TEXT_PLAIN_VALUE);
                 jcrNode.saveSession();
             }
-        } catch (IOException | RepositoryException ex) {
-            LOGGER.error("Impossible to create CSF file", ex);
+        } catch (IOException | RepositoryException | IllegalArgumentException ex) {
+            LOGGER.error("Impossible to create CSV file", ex);
         } finally {
             try {
                 Files.deleteIfExists(csvPath);
@@ -179,12 +181,21 @@ public class ReportUsersAndGroupsCommand implements Action {
     /**
      * Prefix CSV cells that start with formula trigger characters (=, +, -, @, TAB, CR)
      * with a single quote to neutralize CSV/Excel formula injection.
+     *
+     * <p>The first non-whitespace character is inspected so that leading-whitespace
+     * bypasses (e.g. {@code " =1+1"}, which several spreadsheet engines still evaluate
+     * after trimming) are also neutralized.</p>
      */
     static String sanitizeCsv(String value) {
         if (value == null || value.isEmpty()) {
             return value;
         }
-        if (CSV_FORMULA_PREFIX_CHARS.indexOf(value.charAt(0)) >= 0) {
+        int idx = 0;
+        // Skip leading spaces only; TAB/CR are themselves triggers we must still catch.
+        while (idx < value.length() && value.charAt(idx) == ' ') {
+            idx++;
+        }
+        if (idx < value.length() && CSV_FORMULA_PREFIX_CHARS.indexOf(value.charAt(idx)) >= 0) {
             return "'" + value;
         }
         return value;
@@ -212,6 +223,9 @@ public class ReportUsersAndGroupsCommand implements Action {
         JCRNodeWrapper folderNode = session.getRootNode();
         for (String folder : path.split(FileSystem.SEPARATOR)) {
             if (!folder.isEmpty()) {
+                if (PARENT_SEGMENT.equals(folder) || CURRENT_SEGMENT.equals(folder)) {
+                    throw new IllegalArgumentException("Path traversal segment rejected in CSV root path: " + path);
+                }
                 if (folderNode.hasNode(folder)) {
                     folderNode = folderNode.getNode(folder);
                 } else {
