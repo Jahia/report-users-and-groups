@@ -31,7 +31,7 @@ public class ReportUsersAndGroupsMutationExtension {
     @GraphQLField
     @GraphQLName("reportUsersAndGroupsGenerate")
     @GraphQLDescription("Generates a CSV report of all users and their groups and stores it in JCR")
-    @GraphQLRequiresPermission("admin")
+    @GraphQLRequiresPermission("reportUsersAndGroupsAdmin")
     public static Boolean generate(
             @GraphQLName("csvRootPath") @GraphQLNonNull final String csvRootPath,
             @GraphQLName("userPropertiesToExport") final List<String> userPropertiesToExport) {
@@ -50,7 +50,7 @@ public class ReportUsersAndGroupsMutationExtension {
     @GraphQLField
     @GraphQLName("reportUsersAndGroupsDeleteReport")
     @GraphQLDescription("Deletes a single report file from JCR by its JCR path")
-    @GraphQLRequiresPermission("admin")
+    @GraphQLRequiresPermission("reportUsersAndGroupsAdmin")
     public static Boolean deleteReport(
             @GraphQLName("path") @GraphQLNonNull final String path) {
         if (!path.contains(REPORT_FOLDER_SEGMENT)) {
