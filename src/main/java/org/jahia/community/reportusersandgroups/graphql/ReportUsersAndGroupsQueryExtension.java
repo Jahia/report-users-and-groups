@@ -46,7 +46,7 @@ public class ReportUsersAndGroupsQueryExtension {
     @GraphQLField
     @GraphQLName("reportUsersAndGroupsUserProperties")
     @GraphQLDescription("Returns all property names defined on the jnt:user node type, sorted alphabetically")
-    @GraphQLRequiresPermission("admin")
+    @GraphQLRequiresPermission("reportUsersAndGroupsAdmin")
     public static List<String> userProperties() {
         try {
             final ExtendedNodeType userType = NodeTypeRegistry.getInstance().getNodeType("jnt:user");
@@ -65,7 +65,7 @@ public class ReportUsersAndGroupsQueryExtension {
     @GraphQLField
     @GraphQLName("reportUsersAndGroupsIsGenerating")
     @GraphQLDescription("Returns true if a report is currently being generated")
-    @GraphQLRequiresPermission("admin")
+    @GraphQLRequiresPermission("reportUsersAndGroupsAdmin")
     public static Boolean isGenerating() {
         final ReportUsersAndGroupsService service = BundleUtils.getOsgiService(ReportUsersAndGroupsService.class, null);
         return service != null && service.isGenerating();
@@ -74,7 +74,7 @@ public class ReportUsersAndGroupsQueryExtension {
     @GraphQLField
     @GraphQLName("reportUsersAndGroupsFiles")
     @GraphQLDescription("Lists all generated report CSV files under the given JCR root path, sorted by creation date descending")
-    @GraphQLRequiresPermission("admin")
+    @GraphQLRequiresPermission("reportUsersAndGroupsAdmin")
     public static List<GqlReportFile> listFiles(
             @GraphQLName("csvRootPath") @GraphQLNonNull final String csvRootPath) {
         final String folderPath = csvRootPath.endsWith(JCR_PATH_SEPARATOR)
