@@ -38,15 +38,15 @@ export const ReportUsersAndGroupsAdmin = () => {
     }, [t]);
 
     const {data: propsData} = useQuery(GET_USER_PROPERTIES, {fetchPolicy: 'cache-first'});
-    const availableProperties = propsData?.reportUsersAndGroupsUserProperties ?? [];
+    const availableProperties = propsData?.reportUsersAndGroups?.userProperties ?? [];
 
     const {data, refetch, startPolling, stopPolling} = useQuery(GET_STATUS, {
         variables: {csvRootPath},
         fetchPolicy: 'network-only'
     });
 
-    const serverGenerating = data?.reportUsersAndGroupsIsGenerating === true;
-    const reportFiles = data?.reportUsersAndGroupsFiles ?? [];
+    const serverGenerating = data?.reportUsersAndGroups?.isGenerating === true;
+    const reportFiles = data?.reportUsersAndGroups?.files ?? [];
 
     useEffect(() => {
         if (serverGenerating) {
@@ -76,7 +76,7 @@ export const ReportUsersAndGroupsAdmin = () => {
         setGenerateStatus(null);
         try {
             const result = await generate({variables: {csvRootPath, userPropertiesToExport: selectedProperties}});
-            if (result.data?.reportUsersAndGroupsGenerate) {
+            if (result.data?.reportUsersAndGroups?.generate) {
                 setGenerateStatus('success');
                 refetch({csvRootPath});
             } else {
