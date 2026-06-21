@@ -1,3 +1,5 @@
 mutation GenerateReport($csvRootPath: String!, $userPropertiesToExport: [String]) {
-    reportUsersAndGroupsGenerate(csvRootPath: $csvRootPath, userPropertiesToExport: $userPropertiesToExport)
+    reportUsersAndGroups {
+        generate(csvRootPath: $csvRootPath, userPropertiesToExport: $userPropertiesToExport)
+    }
 }

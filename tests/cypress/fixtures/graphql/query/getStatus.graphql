@@ -1,8 +1,10 @@
 query GetReportStatus($csvRootPath: String!) {
-    reportUsersAndGroupsIsGenerating
-    reportUsersAndGroupsFiles(csvRootPath: $csvRootPath) {
-        path
-        downloadUrl
-        createdAt
+    reportUsersAndGroups {
+        isGenerating
+        files(csvRootPath: $csvRootPath) {
+            path
+            downloadUrl
+            createdAt
+        }
     }
 }

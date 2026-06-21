@@ -61,7 +61,7 @@ describe('Report Users and Groups — permission enforcement', () => {
         it('allows the gated query for a user granted only the module permission', () => {
             queryStatusAs(ALLOWED_USER).then((result: never) => {
                 expect(errorsOf(result), 'should have no errors').to.have.length(0);
-                expect((result as {data: {reportUsersAndGroupsIsGenerating: boolean}}).data.reportUsersAndGroupsIsGenerating).to.eq(false);
+                expect((result as {data: {reportUsersAndGroups: {isGenerating: boolean}}}).data.reportUsersAndGroups.isGenerating).to.eq(false);
             });
         });
     });

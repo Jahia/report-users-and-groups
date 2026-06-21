@@ -19,13 +19,13 @@ describe('Report Users and Groups', () => {
     describe('GraphQL API', () => {
         it('isGenerating returns false when idle', () => {
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsIsGenerating')
+                .its('data.reportUsersAndGroups.isGenerating')
                 .should('eq', false);
         });
 
         it('reportUsersAndGroupsFiles returns an array', () => {
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles')
+                .its('data.reportUsersAndGroups.files')
                 .should('be.an', 'array');
         });
 
@@ -37,20 +37,20 @@ describe('Report Users and Groups', () => {
                     userPropertiesToExport: ['j:firstName', 'j:lastName']
                 }
             })
-                .its('data.reportUsersAndGroupsGenerate')
+                .its('data.reportUsersAndGroups.generate')
                 .should('eq', true);
         });
 
         it('generated report file appears in the file list', () => {
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles')
+                .its('data.reportUsersAndGroups.files')
                 .should('have.length.greaterThan', 0);
         });
 
         it('report file has expected fields', () => {
             cy.login();
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles.0')
+                .its('data.reportUsersAndGroups.files.0')
                 .should(file => {
                     expect(file).to.have.property('path');
                     expect(file.path).to.match(/\/report-users-and-groups-\d{8}-\d{6}-\d{3}\.csv$/);
@@ -64,7 +64,7 @@ describe('Report Users and Groups', () => {
         it('report file is accessible via its download URL', () => {
             cy.login();
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles.0.downloadUrl')
+                .its('data.reportUsersAndGroups.files.0.downloadUrl')
                 .then(url => {
                     cy.request(url).its('status').should('eq', 200);
                 });
@@ -73,7 +73,7 @@ describe('Report Users and Groups', () => {
         it('downloaded CSV contains the expected headers', () => {
             cy.login();
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles.0.downloadUrl')
+                .its('data.reportUsersAndGroups.files.0.downloadUrl')
                 .then(url => {
                     cy.request(url)
                         .its('body')
@@ -84,10 +84,10 @@ describe('Report Users and Groups', () => {
 
         it('deletes the report and removes it from the file list', () => {
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles.0.path')
+                .its('data.reportUsersAndGroups.files.0.path')
                 .then(path => {
                     cy.apollo({mutation: deleteReport, variables: {path}})
-                        .its('data.reportUsersAndGroupsDeleteReport')
+                        .its('data.reportUsersAndGroups.deleteReport')
                         .should('eq', true);
                 });
         });
@@ -97,18 +97,18 @@ describe('Report Users and Groups', () => {
                 mutation: generateReport,
                 variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH, userPropertiesToExport: ['j:firstName']}
             })
-                .its('data.reportUsersAndGroupsGenerate')
+                .its('data.reportUsersAndGroups.generate')
                 .should('eq', true);
 
             cy.apollo({
                 mutation: generateReport,
                 variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH, userPropertiesToExport: ['j:firstName']}
             })
-                .its('data.reportUsersAndGroupsGenerate')
+                .its('data.reportUsersAndGroups.generate')
                 .should('eq', true);
 
             cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-                .its('data.reportUsersAndGroupsFiles')
+                .its('data.reportUsersAndGroups.files')
                 .should('have.length.greaterThan', 1);
         });
     });

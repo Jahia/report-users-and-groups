@@ -13,14 +13,14 @@ describe('Report Users and Groups', () => {
     describe('GraphQL API — User Properties', () => {
         it('returns a non-empty array of property names', () => {
             cy.apollo({query: getUserProperties})
-                .its('data.reportUsersAndGroupsUserProperties')
+                .its('data.reportUsersAndGroups.userProperties')
                 .should('be.an', 'array')
                 .and('have.length.greaterThan', 0);
         });
 
         it('contains well-known jnt:user properties', () => {
             cy.apollo({query: getUserProperties})
-                .its('data.reportUsersAndGroupsUserProperties')
+                .its('data.reportUsersAndGroups.userProperties')
                 .then((props: string[]) => {
                     expect(props).to.include('j:firstName');
                     expect(props).to.include('j:lastName');
@@ -30,7 +30,7 @@ describe('Report Users and Groups', () => {
 
         it('does not contain internal jcr:/nt:/rep: properties', () => {
             cy.apollo({query: getUserProperties})
-                .its('data.reportUsersAndGroupsUserProperties')
+                .its('data.reportUsersAndGroups.userProperties')
                 .then((props: string[]) => {
                     props.forEach(p => {
                         expect(p).not.to.match(/^(jcr:|nt:|rep:)/);
@@ -40,7 +40,7 @@ describe('Report Users and Groups', () => {
 
         it('does not expose j:password', () => {
             cy.apollo({query: getUserProperties})
-                .its('data.reportUsersAndGroupsUserProperties')
+                .its('data.reportUsersAndGroups.userProperties')
                 .then((props: string[]) => {
                     expect(props).not.to.include('j:password');
                 });
@@ -48,7 +48,7 @@ describe('Report Users and Groups', () => {
 
         it('does not expose wildcard property definitions', () => {
             cy.apollo({query: getUserProperties})
-                .its('data.reportUsersAndGroupsUserProperties')
+                .its('data.reportUsersAndGroups.userProperties')
                 .then((props: string[]) => {
                     expect(props).not.to.include('*');
                 });
@@ -56,7 +56,7 @@ describe('Report Users and Groups', () => {
 
         it('returns properties in alphabetical order', () => {
             cy.apollo({query: getUserProperties})
-                .its('data.reportUsersAndGroupsUserProperties')
+                .its('data.reportUsersAndGroups.userProperties')
                 .then((props: string[]) => {
                     const sorted = [...props].sort();
                     expect(props).to.deep.equal(sorted);

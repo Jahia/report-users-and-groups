@@ -11,7 +11,7 @@ describe('Report Users and Groups — UI', () => {
 
     const cleanupAllReports = () => {
         cy.apollo({query: getStatus, variables: {csvRootPath: DEFAULT_CSV_ROOT_PATH}})
-            .its('data.reportUsersAndGroupsFiles')
+            .its('data.reportUsersAndGroups.files')
             .then((files: Array<{path: string}>) => {
                 files.forEach(f => {
                     cy.apollo({mutation: deleteReport, variables: {path: f.path}});

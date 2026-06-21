@@ -1,3 +1,5 @@
 mutation DeleteReport($path: String!) {
-    reportUsersAndGroupsDeleteReport(path: $path)
+    reportUsersAndGroups {
+        deleteReport(path: $path)
+    }
 }
